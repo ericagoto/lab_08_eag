@@ -72,5 +72,46 @@ leaflet(oil_sf) %>%
 
 ```
 
+## tmap plot with the Texas state shapefile
+
+```{r}
+
+
+states <- st_read(dsn=".", layer="states")
+
+tex_border <- states %>% 
+  filter (STATE_NAME == "Texas") %>% 
+  st_transform(4326)
+
+
+plot(tex_border) 
+
+
+tm_shape (tex_border) + 
+  tm_polygons() +
+  tm_shape(oil_sf) +
+  tm_dots(size = 0.3)
+
+
+
+```
+
+
+### Convert the data to spatial points patterns (combination of point data and the bounding window)
+
+```{r ppp}
+spill_sp <- as(oil_sf, "Spatial")
+spill_ppp <- as(spill_sp, "ppp")
+
+
+tx_sp <- as(tex_border, "Spatial")
+tx_owin <- as(tx_sp, "owin")
+
+
+all_ppp <- ppp( spill_ppp$x, spill_ppp$y, window=tx_owin)
+
+
+```
+
 
 
