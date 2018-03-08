@@ -1,0 +1,76 @@
+---
+title: "Lab08"
+author: "Erica Goto"
+date: "3/8/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## LAB 08
+
+
+Libraries:
+
+```{r library, message=FALSE}
+
+library(tidyverse)
+library(sf)
+library(tmap)
+library(leaflet)
+library(spatstat)
+library(maptools)
+library(corrplot)
+
+
+
+```
+
+
+### Column graph of Texas oil spills:
+
+```{r oil_spill, message="FALSE"}
+
+oil_spills <- read_csv("oil_spills.csv")
+
+
+df <- oil_spills %>% 
+  filter(`Accident State` =="TX"& `Accident Year` < 2017) %>% 
+  group_by(`Accident Year`) %>% 
+summarise (Loss = sum(`Net Loss (Barrels)`))
+
+
+colnames(df) <- c("Year", "Loss")
+
+ggplot(df, aes(x=Year, y=Loss)) +
+         geom_col()
+
+
+
+
+```
+
+```{r}
+df_loc <- oil_spills %>% 
+  filter(`Accident State` == "TX" & `Accident Year` == 2016) %>% 
+  select(Latitude, Longitude, `Net Loss (Barrels)`)
+
+
+colnames (df_loc) <- c("lat", "long", "net_loss")
+
+
+oil_sf <- st_as_sf(df_loc, coords = c("long", "lat"), crs=4326)
+
+
+leaflet(oil_sf) %>% 
+  addTiles() %>% 
+  addMarkers()
+
+
+
+```
+
+
+
