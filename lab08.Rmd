@@ -112,6 +112,42 @@ all_ppp <- ppp( spill_ppp$x, spill_ppp$y, window=tx_owin)
 
 
 ```
+## Plot
+```{r}
+plot(density(all_ppp, sigma=0.3)) ### you need to find  i meaniful way to use the sigma
+```
 
 
+### Quadrant test for spatial eveness
+```{r oil_points}
+oil_qt <- quadrat.test(all_ppp, nx=5, ny=5)
+
+oil_qt # data are not evanly distributed
+
+plot(all_ppp)
+plot (oil_qt, add = TRUE, cex =0.4)
+```
+
+
+### G- Function for nearest neighbor analysis
+
+```{r}
+r <- seq(0,1, by=0.01)
+
+oil_gfun <- envelope (all_ppp, fun = Gest, r = r, nsim = 100)
+
+ggplot(oil_gfun, aes(x=r, y=obs)) + 
+  geom_line(color="black") +
+  geom_line(aes(x=r, y=theo), color = "red")+
+  theme_bw()
+
+```
+
+
+### Nearest neighbor using the L-function (Ripley's K, standardized)
+```{r}
+r2 <- seq(0,3, by=0.5) # large increment because time cosuming in the lab... 
+oil_lfun <- envelope (all_ppp, fun=Lest, r=r2, nsim = 20, global = TRUE) ### global = TRUE to include all observation
+
+```
 
